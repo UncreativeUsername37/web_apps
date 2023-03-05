@@ -1,0 +1,26 @@
+country: Country
+sex: Sex (male, female, combined)
+year: Year
+suicide_rate: Age-standardized suicide rate (suicides per 100k people)
+mental_hospitals_per_100k: Mental hospitals per 100k people.
+general_h_units_per_100k: Mental health units in general hospitals per 100k people.
+outpatient_facilities_per_100k: Mental health outpatient facilities per 100k people.
+day_treatment_facilities_per_100k: Mental health day treatment facilities per 100k people.
+comres_facilities_per_100k: Community residential facilities per 100k people.
+psychiatrists_per_100k: Psychiatrists working in the health sector per 100k people.
+nurses_per_100k: Nurses working in the health sector per 100k people.
+social_workers_per_100k: Social workers working in the health sector per 100k people.
+psychologists_per_100k: Psychologists working in the health sector per 100k people.
+hospital_budget_pct: Government expenditures on mental hospitals as a percentage of total government expenditures on mental health (%)
+standalone_law: Whether the country has a Stand-alone law for mental health
+standalone_law_year: Year the law was enacted (latest revision)
+standalone_policy: Whether the country has a Stand-alone policy or plan for mental health
+standalone_policy_year: Publication year of the policy or plan (latest revision)
+comres_beds_per_100k: Beds in community residential facilities (per 100k population)
+mental_h_beds_per_100k: Beds in mental hospitals (per 100k population)
+general_h_beds_per_100k: Beds for mental health in general hospitals (per 100k population)
+
+Data from the Global Health Observatory and collected by Larxel on Kaggle.
+https://apps.who.int/gho/data/node.main.MENTALHEALTH
+https://www.kaggle.com/datasets/andrewmvd/suicide-dataset
+Field descriptions are taken from the Kaggle dataset.

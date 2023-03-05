@@ -1,52 +1,63 @@
 import pandas as pd
-import scipy.stats
+import numpy as np
+import plotly.express as px
 import streamlit as st
-import time
 
-# these are stateful variables which are preserved as Streamlin reruns this script
-if 'experiment_no' not in st.session_state:
-    st.session_state['experiment_no'] = 0
+df = pd.read_csv("notebooks/suicide_dataset-11.csv")
+df = df.replace({'Yes': True, 'No': False})
+df2015 = df[df["year"] == 2015]
+df2015g = df2015[df2015["sex"] != "Both"]
+df2015b = df2015[df2015["sex"] == "Both"]
+df2016 = df[df["year"] == 2016]
+df2016g = df2016[df2016["sex"] != "Both"]
+df2016b = df2016[df2016["sex"] == "Both"]
 
-if 'df_experiment_results' not in st.session_state:
-    st.session_state['df_experiment_results'] = pd.DataFrame(columns=['no', 'iterations', 'mean'])
+st.title("What accommodations best prevent suicide?")
 
-st.header('Tossing a Coin')
+# And now we make things with our things
+st.write("The dataset I used covered 2015 and 2016. In the analysis, I focussed on 2016 for being more recent and having more data to work with. The numbers by country weren't very different.")
+yrbutton = st.radio("Year", ("2015", "2016"))
 
-chart = st.line_chart([0.5])
+if yrbutton == "2015":
+    world = px.choropleth(df2015b, projection="winkel tripel", locations="iso", color="suicide_rate", color_continuous_scale=px.colors.sequential.Bluered)
+    hist = px.histogram(df2015b, x="suicide_rate")
 
-def toss_coin(n):
+if yrbutton == "2016":
+    world = px.choropleth(df2016b, projection="winkel tripel", locations="iso", color="suicide_rate", color_continuous_scale=px.colors.sequential.Bluered)
+    hist = px.histogram(df2016b, x="suicide_rate")
 
-    trial_outcomes = scipy.stats.bernoulli.rvs(p=0.5, size=n)
+st.plotly_chart(world)
 
-    mean = None
-    outcome_no = 0
-    outcome_1_count = 0
+st.write("If it looks like there are more countries with lower rates, it's because there are.")
+st.plotly_chart(hist)
 
-    for r in trial_outcomes:
-        outcome_no +=1
-        if r == 1:
-            outcome_1_count += 1
-        mean = outcome_1_count / outcome_no
-        chart.add_rows([mean])
-        time.sleep(0.05)
+st.write("I looked at most of the variables the dataset had to offer, and of all the scatterplots I made for 2016, there were two with an R² that was even over .05, and the one with the bigger one had a positive trend. Here they are. First for the number of mental hospitals per 100 000 people:")
+mentalh_g = st.checkbox("Gendered", key="mentalh")
 
-    return mean
+if mentalh_g:
+    if yrbutton == "2015":
+        mentalh = px.scatter(df2015g[df2015g["mental_hospitals_per_100k"] < 0.5], x="mental_hospitals_per_100k", y="suicide_rate", trendline="ols", color="sex")
+    if yrbutton == "2016":
+        mentalh = px.scatter(df2016g[df2016g["mental_hospitals_per_100k"] < 0.5], x="mental_hospitals_per_100k", y="suicide_rate", trendline="ols", color="sex")
+else:
+    if yrbutton == "2015":
+        mentalh = px.scatter(df2015b[df2015b["mental_hospitals_per_100k"] < 0.5], x="mental_hospitals_per_100k", y="suicide_rate", trendline="ols")
+    if yrbutton == "2016":
+        mentalh = px.scatter(df2016b[df2016b["mental_hospitals_per_100k"] < 0.5], x="mental_hospitals_per_100k", y="suicide_rate", trendline="ols")
+st.plotly_chart(mentalh)
 
-number_of_trials = st.slider('Number of trials?', 1, 1000, 10)
-start_button = st.button('Run')
+st.write("And here for psychiatrists:")
+psyiatr_g = st.checkbox("Gendered", key="psyiatr")
 
-if start_button:
-    st.write(f'Running the experient of {number_of_trials} trials.')
-    st.session_state['experiment_no'] += 1
-    mean = toss_coin(number_of_trials)
-    st.session_state['df_experiment_results'] = pd.concat([
-        st.session_state['df_experiment_results'],
-        pd.DataFrame(data=[[st.session_state['experiment_no'],
-                            number_of_trials,
-                            mean]],
-                     columns=['no', 'iterations', 'mean'])
-        ],
-        axis=0)
-    st.session_state['df_experiment_results'] = st.session_state['df_experiment_results'].reset_index(drop=True)
-
-st.write(st.session_state['df_experiment_results'])
+if psyiatr_g:
+    if yrbutton == "2015":
+        psyiatr = px.scatter(df2015g[df2015g["psychiatrists_per_100k"] < 2], x="psychiatrists_per_100k", y="suicide_rate", trendline="ols", color="sex")
+    if yrbutton == "2016":
+        psyiatr = px.scatter(df2016g[df2016g["psychiatrists_per_100k"] < 2], x="psychiatrists_per_100k", y="suicide_rate", trendline="ols", color="sex")
+else:
+    if yrbutton == "2015":
+        psyiatr = px.scatter(df2015b[df2015b["psychiatrists_per_100k"] < 2], x="psychiatrists_per_100k", y="suicide_rate", trendline="ols")
+    if yrbutton == "2016":
+        psyiatr = px.scatter(df2016b[df2016b["psychiatrists_per_100k"] < 2], x="psychiatrists_per_100k", y="suicide_rate", trendline="ols")
+st.plotly_chart(psyiatr)
+st.write("You can see what I mean with the \"not as much data\" thing.")
