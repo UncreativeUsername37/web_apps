@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import streamlit as st
 
@@ -28,10 +27,10 @@ if yrbutton == "2016":
 
 st.plotly_chart(world)
 
-st.write("If it looks like there are more countries with lower rates, it's because there are.")
+st.write("The rate listed is per 100&nbsp;000 people. If it looks like there are more countries with lower rates, it's because there are:")
 st.plotly_chart(hist)
 
-st.write("I looked at most of the variables the dataset had to offer, and of all the scatterplots I made for 2016, there were two with an R² that was even over .05, and the one with the bigger one had a positive trend. Here they are. First for the number of mental hospitals per 100 000 people:")
+st.write("I looked at most of the variables the dataset had to offer, and of all the scatterplots I made for 2016, there were two with an R² that was even over .05 when genders were combined, and the one with the bigger one had a positive trend. Here they are. First for the number of mental hospitals per 100 000 people:")
 mentalh_g = st.checkbox("Gendered", key="mentalh")
 
 if mentalh_g:
@@ -60,4 +59,5 @@ else:
     if yrbutton == "2016":
         psyiatr = px.scatter(df2016b[df2016b["psychiatrists_per_100k"] < 2], x="psychiatrists_per_100k", y="suicide_rate", trendline="ols")
 st.plotly_chart(psyiatr)
-st.write("You can see what I mean with the \"not as much data\" thing.")
+if yrbutton == "2015":
+    st.write("You can see what I mean with the \"not as much data\" thing.")
